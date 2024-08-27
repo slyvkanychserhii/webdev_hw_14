@@ -19,11 +19,12 @@ class CategoryViewSet(ModelViewSet):
     # http://127.0.0.1:8000/api/categories/count_tasks/
     @action(detail=False, methods=['get'])
     def count_tasks(self, request):
-        tasks_by_category = Task.objects.values('categories__name').annotate(tasks_count=Count('*'))
+        tasks_by_category = Category.objects.annotate(task_count=Count('tasks'))
         data = [
             {
-                "category_name": category['categories__name'],
-                "tasks_count": category['tasks_count']
+                "category_id": category.id,
+                "category_name": category.name,
+                "task_count": category.task_count
             }
             for category in tasks_by_category
         ]
@@ -58,11 +59,11 @@ class TaskStatisticsView(APIView):
     def get(self, request):
         data = {}
         data['tasks'] = Task.objects.count()
-        tasks_by_status = Task.objects.values('status').annotate(tasks_count=Count('*'))
+        tasks_by_status = Task.objects.values('status').annotate(task_count=Count('*'))
         data['tasks_by_status'] = [
             {
                 "status": StatusType(status['status']).label,
-                "tasks_count": status['tasks_count']
+                "tasks_count": status['task_count']
             }
             for status in tasks_by_status
         ]
@@ -94,4 +95,3 @@ class SubTaskListCreateView(ListCreateAPIView):
 class SubTaskRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = SubTask.objects.all()
     serializer_class = SubTaskSerializer
-

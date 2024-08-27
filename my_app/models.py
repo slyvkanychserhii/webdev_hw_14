@@ -36,7 +36,7 @@ class Task(models.Model):
                               choices=StatusType.choices, default=StatusType.NEW)
     deadline = models.DateTimeField(verbose_name='deadline date and time', default=end_of_month)
     created_at = models.DateTimeField(verbose_name='creation date and time', auto_now_add=True)
-    categories = models.ManyToManyField(to=Category, related_name='tasks', related_query_name='task', 
+    categories = models.ManyToManyField(to=Category, related_name='tasks', related_query_name='tasks', 
                                         verbose_name='task categories', blank=True)
     class Meta:
         db_table = '"my_app_task"'
